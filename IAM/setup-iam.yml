@@ -1,0 +1,58 @@
+Description: Pravin MJ/Udagram Project-IAM Setup
+
+Parameters:
+  EnvironmentName:
+    Description: An environment name that will be prefixed to resource names
+    Type: String
+  
+Resources:
+  UdagramIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${EnvironmentName}-Role"
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore'
+        - 'arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy'
+  
+  UdagramPolicies:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub "${EnvironmentName}-Policies"
+      PolicyDocument:
+        Statement:
+        - Effect: Allow
+          Action: 
+          - "ssm:Get*"
+          - "s3:Get*"
+          Resource: '*'
+      Roles:
+      - !Ref UdagramIAMRole
+      
+  UdagramInstanceProfile:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Path: "/"
+      Roles:
+      - !Ref UdagramIAMRole
+
+Outputs: 
+  UdagramDeployer:
+    Description: Udagram IAM Role
+    Value: !Ref UdagramIAMRole
+    Export:
+      Name: !Sub ${EnvironmentName}-Role
+
+  InstanceProfile:
+    Description: Instance profile of Udagram IAM Role
+    Value: !Ref UdagramInstanceProfile
+    Export:
+      Name: !Sub ${EnvironmentName}-InstanceProfile
