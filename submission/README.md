@@ -115,4 +115,4 @@ Please refer to the hosted [link](http://udagr-webap-y6f31c66k93r-1021377290.us-
 - [ ] Setup a Bastion host for connecting the private servers(Partially). Failed to authenticate pass phrase error. Raised request for mentor help. But connected to private instance by updating template and setting up Session manager.
 - [x] AWS Parameter store usage for accesing credentials
 - [x] CloudWatch Alarms and Cloudwatch metrics
-- [x] Using Conditionals and Diffenet types for input property like CommaDemilitedList
+- [x] Using Conditionals and Different types for input property like CommaDemilitedList
