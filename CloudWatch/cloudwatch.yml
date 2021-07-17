@@ -1,0 +1,111 @@
+Description: Pravin MJ/Monitoring Resouces in Autoscaling Group
+
+Parameters:
+  EnvironmentName:
+    Description: An environment name that will be prefixed to a resource names
+    Type: String
+
+Resources:  
+
+    HighCPUAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmName: High CPU Usage
+        AlarmDescription: Scale up instances if CPU usage is > 85% for 5 minutes. Triggers if there is 2 data points breach
+        AlarmActions:
+        - !Ref ScaleUpPolicy
+        MetricName: CPUUtilization
+        Namespace: AWS/EC2
+        Statistic: Average
+        EvaluationPeriods: 2
+        Threshold: 85
+        Period: 300
+        ComparisonOperator: GreaterThanThreshold
+        Dimensions:
+        - Name: AutoScalingGroupName
+          Value: 
+            Fn::ImportValue: !Sub "${EnvironmentName}-AutoScalingGroup"
+
+
+    LowCPUAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmName: Low CPU Usage
+        AlarmDescription: Scale down instances if CPU usage is < 85% for 10 minutes, Checks for 3 data points within the period before triggering action
+        AlarmActions:
+        - !Ref ScaleDownPolicy
+        MetricName: CPUUtilization
+        Namespace: AWS/EC2
+        Statistic: Average
+        EvaluationPeriods: 3
+        Threshold: 85
+        Period: 600
+        ComparisonOperator: GreaterThanThreshold
+        Dimensions:
+        - Name: AutoScalingGroupName
+          Value: 
+            Fn::ImportValue: !Sub "${EnvironmentName}-AutoScalingGroup"
+
+
+    HighMemoryAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmName: High Memory Usage
+        AlarmDescription: Scale-up if Memory usage is > 85% for 5 minutes. Triggers if there is 2 data points breach
+        AlarmActions:
+        - !Ref ScaleUpPolicy
+        MetricName: mem_used_percent
+        Namespace: AWS/EC2
+        Statistic: Average
+        EvaluationPeriods: 2
+        Threshold: 85
+        Period: 300
+        ComparisonOperator: GreaterThanThreshold
+        Dimensions:
+        - Name: AutoScalingGroupName
+          Value: 
+            Fn::ImportValue: !Sub "${EnvironmentName}-AutoScalingGroup"
+
+
+    LowMemoryAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmName: Low Memory Usage
+        AlarmDescription: Scale-down if Memory usage is < 85% for 10 minutes. Checks for 3 data points within the period before triggering action
+        AlarmActions:
+        - !Ref ScaleDownPolicy
+        MetricName: mem_used_percent
+        Namespace: AWS/EC2
+        Statistic: Average
+        EvaluationPeriods: 3
+        Threshold: 85
+        Period: 600
+        ComparisonOperator: GreaterThanThreshold
+        Dimensions:
+        - Name: AutoScalingGroupName
+          Value: 
+            Fn::ImportValue: !Sub "${EnvironmentName}-AutoScalingGroup"
+  
+    ScaleUpPolicy:
+      Description: Increase instance by 1 for each threshold breach.
+      Type: AWS::AutoScaling::ScalingPolicy
+      Properties:
+        ScalingAdjustment: 1
+        Cooldown: 120
+        AdjustmentType: ChangeInCapacity
+        AutoScalingGroupName: 
+          Fn::ImportValue: !Sub "${EnvironmentName}-AutoScalingGroup"
+        Cooldown: 120
+
+
+    ScaleDownPolicy:
+      Description: Decrease instance by 1 for each threshold breach
+      Type: AWS::AutoScaling::ScalingPolicy
+      Properties:
+        ScalingAdjustment: -1
+        Cooldown: 300
+        AdjustmentType: ChangeInCapacity
+        AutoScalingGroupName: 
+          Fn::ImportValue: !Sub "${EnvironmentName}-AutoScalingGroup"
+
+
