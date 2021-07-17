@@ -1,5 +1,4 @@
-Description: >
-   -  Pravin MJ/Udagram Project-S3 bucket Setup
+Description: Pravin MJ/Udagram Project-S3 bucket Setup
   
 Parameters:
   EnvironmentName:
@@ -12,7 +11,7 @@ Parameters:
     Default: s3-bucket
 
 Resources:
-  UdagramBucketS3:
+  Udagrams3BucketS3:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref BucketName

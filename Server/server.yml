@@ -44,7 +44,7 @@ Resources:
           - Key: name
             Value: !Sub ${EnvironmentName} SecGroup of EC2 instances
 
-    WebHostsLaunchConfig:
+    WebServerLaunchConfig:
       Type: AWS::AutoScaling::LaunchConfiguration
       Properties:
         ImageId: !If [ isProduction, !Ref InstanceAMI, ami-0bb5a904861ec247f]
@@ -71,19 +71,20 @@ Resources:
             sudo rm index.html
             sudo aws s3 cp s3://udagram-s3-bucket-mjpcs/udacity.zip .
             sudo unzip -o udacity.zip
+            aws ssm get-parameter --name AppSecretKey --with-decryption --output text --region us-east-1 > .secret.txt
             sudo systemctl start apache2.service
             sudo snap install amazon-ssm-agent --classic
             sudo snap start amazon-ssm-agent
 
-    WebHostAutoSG:
+    WebServerAutoSG:
       Type: AWS::AutoScaling::AutoScalingGroup
       Properties:
-        LaunchConfigurationName: !Ref WebHostsLaunchConfig
+        LaunchConfigurationName: !Ref WebServerLaunchConfig
         VPCZoneIdentifier:
           - Fn::ImportValue: !Sub "${EnvironmentName}-PRIVATE-NET"
-        MinSize: 1
-        MaxSize: 2
-        DesiredCapacity: 1
+        MinSize: 2
+        MaxSize: 4
+        DesiredCapacity: 2
         Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName}-WebHostAutoSecGroup
@@ -165,7 +166,7 @@ Resources:
       Type: AWS::AutoScaling::ScalingPolicy
       Properties:
         AdjustmentType: ChangeInCapacity
-        AutoScalingGroupName: !Ref WebHostAutoSG
+        AutoScalingGroupName: !Ref WebServerAutoSG
         Cooldown: 120
         ScalingAdjustment: 1
 
@@ -173,7 +174,7 @@ Resources:
       Type: AWS::AutoScaling::ScalingPolicy
       Properties:
         AdjustmentType: ChangeInCapacity
-        AutoScalingGroupName: !Ref WebHostAutoSG
+        AutoScalingGroupName: !Ref WebServerAutoSG
         Cooldown: 500
         ScalingAdjustment: -1
 
@@ -193,7 +194,7 @@ Resources:
         - !Ref AutoScaleUpPolicy
         Dimensions:
         - Name: AutoScalingGroupName
-          Value: !Ref WebHostAutoSG
+          Value: !Ref WebServerAutoSG
 
     LowCPUAlarm:
       Type: AWS::CloudWatch::Alarm
@@ -210,7 +211,7 @@ Resources:
         - !Ref AutoScaleDownPolicy
         Dimensions:
         - Name: AutoScalingGroupName
-          Value: !Ref WebHostAutoSG
+          Value: !Ref WebServerAutoSG
 
 
     HighMemoryAlarm:
@@ -229,7 +230,7 @@ Resources:
         - !Ref AutoScaleUpPolicy
         Dimensions:
         - Name: AutoScalingGroupName
-          Value: !Ref WebHostAutoSG
+          Value: !Ref WebServerAutoSG
 
     LowMemoryAlarm:
       Type: AWS::CloudWatch::Alarm
@@ -246,7 +247,7 @@ Resources:
         - !Ref AutoScaleDownPolicy
         Dimensions:
         - Name: AutoScalingGroupName
-          Value: !Ref WebHostAutoSG
+          Value: !Ref WebServerAutoSG
 
 Outputs:
  
@@ -254,4 +255,4 @@ Outputs:
     Description: Load balancer DNS name of the web application
     Value: !Sub http://${WebAppLoadBalancer.DNSName}
     Export:
-      Name: !Sub ${EnvironmentName}-DNS-NAME
+      Name: !Sub ${EnvironmentName}-DNS

@@ -33,18 +33,11 @@ This needs to be done in an automated fashion so that the infrastructure can be 
 ![alt text](images/nw-06-all-op.png)
 
 # S3 and IAM
-
-## 3. Create S3 Bucket for developers to upload zip
-
-### Create and deploy a cloud formation script for s3 bucket creation
-
-![alt text](images/s3-bucket-creation.png)
-
-### Upload a web app zip
+### 3. Upload a web app zip to an S3 bucket
 
 ![alt text](images/upload-app-zip.png)
 
-## 4. Create an Instance Profile for IAM
+## 3. Create an Instance Profile for IAM
 
 ### IAM resources with relevant policies to access the S3 bucket
 
@@ -93,7 +86,8 @@ This needs to be done in an automated fashion so that the infrastructure can be 
 
 Scaled down instances and update environment type to run as development to avoid charges. 
 
-Please refer to the hosted [link](http://udagr-webap-1iqxi4m6bs0oo-1155557510.us-east-1.elb.amazonaws.com/)
+Arrange namespaces and template formats, Removed Stack and tested one full recreation
+Please refer to the hosted [link](http://udagr-webap-y6f31c66k93r-1021377290.us-east-1.elb.amazonaws.com/)
 
 
 ## Requirements Achieved
@@ -118,7 +112,7 @@ Please refer to the hosted [link](http://udagr-webap-1iqxi4m6bs0oo-1155557510.us
 ### Optional Requirements
 
 - [x] Stacks are created individually so outputs can be used efficiently
-- [ ] Setup a Bastion host for connecting the private servers(Partially). Failed to authenticate saved ssh.Public key denied. Raised request for mentor help. But connected to private instance using Session manager
-- [x] AWS Parameter store usage for saving credentials
+- [ ] Setup a Bastion host for connecting the private servers(Partially). Failed to authenticate pass phrase error. Raised request for mentor help. But connected to private instance by updating template and setting up Session manager.
+- [x] AWS Parameter store usage for accesing credentials
 - [x] CloudWatch Alarms and Cloudwatch metrics
 - [x] Using Conditionals and Diffenet types for input property like CommaDemilitedList
