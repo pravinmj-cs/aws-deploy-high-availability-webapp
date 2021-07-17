@@ -2,7 +2,7 @@
 
 Deploy a high-availability web app to a secure network with automated monitoring of CPU and Memory with CloudWatch.
 
-## Architecture
+## Architecture Diagram
 
 ![alt text](submission/images/Arch.png)
 
@@ -27,5 +27,5 @@ Update stacks using update.sh for required stack.
 Delete stack with 
 > delete.sh {stack-name}
  
-
+ 
 Connect to your private instance with [AWS Session manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-getting-started.html). Update launch config for custom scripts.
